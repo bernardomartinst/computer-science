@@ -285,114 +285,111 @@ class LeitorCsv{
 
 	return conjunto;
 	}
-}
+}	
+
 
 public class Tp3Q1 {
-	
-	public static void mergeSort (int esq, int dir, Veiculo carros[]){
-	
-		if(esq < dir){
-			
-			int meio = (dir + esq) / 2;
-			mergeSort (esq, meio, carros);
-			mergeSort (meio + 1, dir, carros);
-			intercalar (esq, meio, dir, carros);
-			
-		}
-	}
 
-	public static void intercalar (int esq, int meio, int dir, Veiculo carros[]){
-	
-		int nEsq = (meio + 1) - esq;
-		int nDir = dir - meio;
-
-		Veiculo vetEsq[] = new Veiculo[nEsq + 1];
-	        Veiculo vetDir[] = new Veiculo [nDir + 1];
+	public static void mergeSort (Veiculo carros[], int esq, int dir){
 		
+		if (esq < dir){
+
+         		int meio = (esq + dir) / 2;
+         		mergeSort(carros, esq, meio);
+         		mergeSort(carros, meio + 1, dir);
+         		intercalar(carros, esq, meio, dir);
+      		}
+   	}
+	
+	public static void intercalar (Veiculo[] carros, int esq, int meio, int dir){
+
+		int nEsq, nDir;
+
+		nEsq = meio - esq + 1;
+		nDir = dir - meio;
+
+		Veiculo[] vetDir = new Veiculo[nDir];
+		Veiculo[] vetEsq = new Veiculo[nEsq];
+
 		int iEsq, iDir, i;
-		
-		for (iEsq = 0; iEsq < nEsq; iEsq++){
-
-			vetEsq[iEsq] = carros[esq + iEsq];
-		}
 
 		for (iDir = 0; iDir < nDir; iDir++){
-			
-			vetDir[iDir] = carros[(meio + 1) + iDir];
+				
+			vetDir[iDir] = carros[iDir + meio + 1];
 		}
 
-		iEsq = 0;
+		for (iEsq = 0; iEsq < nEsq; iEsq++){
+			
+			vetEsq [iEsq] = carros[esq + iEsq];
+		}
+
 		iDir = 0;
+		iEsq = 0;
 
-		 int k = esq;
+		i = esq;
 
-      		while (iEsq < nEsq && iDir < nDir) {
+		while (iEsq < nEsq && iDir < nDir){
+		
+			if (vetEsq[iEsq].getConsumoCidade() < vetDir[iDir].getConsumoCidade()){
+			
+				carros[i++] = vetEsq[iEsq++];
+				
+			} else if (vetEsq[iEsq].getConsumoCidade() > vetDir[iDir].getConsumoCidade()){
+			
+				carros[i++] = vetDir[iDir++];
+			
+			} else if (vetEsq[iEsq].getCategoria().compareToIgnoreCase(vetDir[iDir].getCategoria()) > 0){
+			
+				carros[i++] = vetDir[iDir++];
 
-       
-       	 if (vetEsq[iEsq].getConsumoCidade() < vetDir[iDir].getConsumoCidade()) {
-        	   carros[k++] = vetEsq[iEsq++];
+			} else {
+			
+				carros[i++] = vetEsq[iEsq++];
+			}	
+		}
 
-        } else if (vetEsq[iEsq].getConsumoCidade() > vetDir[iDir].getConsumoCidade()) {
-            carros[k++] = vetDir[iDir++];
+		while (iEsq < nEsq){
+		
+			carros[i++] = vetEsq[iEsq++];
+		}
 
-        } else {
-            // Empate no consumo -> Desempata pelo 2º critério: categoria (ordem alfabética)
-            if (vetEsq[iEsq].getCategoria().compareTo(vetDir[iDir].getCategoria()) <= 0) {
-                carros[k++] = vetEsq[iEsq++];
-            } else {
-                carros[k++] = vetDir[iDir++];
-            }
-        }
-    }
-
-    // 6. Copia os elementos restantes da esquerda (se sobrou algum)
-    while (iEsq < nEsq) {
-        carros[k++] = vetEsq[iEsq++];
-    }
-
-    // 7. Copia os elementos restantes da direita (se sobrou algum)
-    while (iDir < nDir) {
-        carros[k++] = vetDir[iDir++];
-    }
-	}	
+		while (iDir < nDir){
+			carros[i++] = vetDir [iDir++];
+		}
+	}
 	
 	public static void main (String []args){
 
 		Veiculo carros[] = new Veiculo[500];
+		Veiculo consumoCidade[] = new Veiculo[500];
+		int qtdConsumoCidade = 0;
 		carros = LeitorCsv.ler("/tmp/veiculos.csv");	
 		Scanner scan = new Scanner (System.in);
-		int contador = 0;
 
 		int vetor[] = new int[500];
-		int num = Integer.parseInt (scan.nextLine());
-		int i = 0;
+
+		int num = scan.nextInt();
 
 		while ( num != -1 ){
-
-			vetor [i] = num;
-			i++;
-			num = Integer.parseInt (scan.nextLine());	
-			contador++;
-		}
-
-		Veiculo consumoCidade[] = new Veiculo[contador];
-		int n = 0;
 	
-		for (int j = 0; j < contador ; j++){
-		
-			for (int k = 0; k < 500; k++){
-			
-				if (carros[k].getId() == vetor[j]){
+			for (int j = 0; j < carros.length; j++){
+				
+				if (carros[j].getId() == num){
 					
-					consumoCidade[n++] = carros[k];
+					consumoCidade[qtdConsumoCidade] = carros[j];
+					j = carros.length;
+					qtdConsumoCidade++;
 				}
 			}
+
+			num = scan.nextInt();
 		}
 
-		mergeSort(0, n - 1, consumoCidade);
-		for ( int j = 0; j < n; j++){
-		
-			System.out.println (consumoCidade[j].format());							
-		}
-	}	
+		mergeSort(consumoCidade, 0, qtdConsumoCidade - 1);
+
+		for (int k = 0; k < qtdConsumoCidade; k++){
+
+                         System.out.println (consumoCidade[k].format());
+                 }
+ 	}	
 }
