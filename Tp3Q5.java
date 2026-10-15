@@ -312,7 +312,7 @@ class ListaDupla {
 	public ListaDupla (){
  
             this.primeiro = new Celula();
-        	this.ultimo = this.primeiro;
+            this.ultimo = this.primeiro;
         }
 
 	public int tamanho(){
@@ -478,45 +478,73 @@ class ListaDupla {
 		quickSort(primeiro.prox, ultimo);
 	}
 
-	public void quickSort (Celula inicio, Celula fim){
-	
-		Celula i = inicio, j = fim;
+	public void quickSort (Celula esq, Celula dir){
 
-		double pivoEstrada = inicio.veiculo.getConsumoEstrada();
-		String pivoMarca = inicio.veiculo.getMarca();
-     	
-		while (i != j){
+        	if (esq == null || dir == null || esq == dir || esq == dir.prox){
+			return;
+		}
 
-		  while (i.veiculo.getConsumoEstrada() < pivoEstrada ||
-			 i.veiculo.getConsumoEstrada() == pivoEstrada && i.veiculo.getMarca().compareToIgnoreCase(pivoMarca) < 0 ){
-				i = i.prox;
-		  }
+        	Celula i = esq, j = dir;
+        	double pivoEstrada = esq.veiculo.getConsumoEstrada();
+		String pivoMarca = esq.veiculo.getMarca();
 
-		  while (j.veiculo.getConsumoEstrada() > pivoEstrada ||
-			 j.veiculo.getConsumoEstrada() == pivoEstrada && j.veiculo.getMarca().compareToIgnoreCase(pivoMarca) > 0 ){
-				j = j.ant;
-		  }
+        	while (i != null && j != null && comparaCelulas(i, j) <= 0) {
 
-		  if (i != j && i != null && j != null){
-		  
-		  	Veiculo tmp = i.veiculo;
-			i.veiculo = j.veiculo;
-			j.veiculo = tmp;
-			i = i.prox;
-			j = j.ant;
-		  
-		 }
-	      }
+            		while (i != null && (i.veiculo.getConsumoEstrada() < pivoEstrada ||
+			(i.veiculo.getConsumoEstrada() == pivoEstrada && i.veiculo.getMarca().compareTo(pivoMarca) < 0))) {
+                		i = i.prox;
+            		}
+            		while (j != null && (j.veiculo.getConsumoEstrada() > pivoEstrada ||
+			(j.veiculo.getConsumoEstrada() == pivoEstrada && j.veiculo.getMarca().compareTo(pivoMarca) > 0))) {
+                		j = j.ant;
+            		}	
 
-	      if (inicio != j) {
-    			quickSort(inicio, j);
-	      }
+            		if ( i != null && j != null && comparaCelulas(i, j) <= 0) { 
+ 
+                		Veiculo temp = i.veiculo;
+                		i.veiculo = j.veiculo;
+                		j.veiculo = temp;
+				
+				if (i == dir) {
+                    			i = null;
+                		} else {
+                    			i = i.prox;
+                		}
+                
+                		if (j == esq) {
+                    			j = null;
+                		} else {
+                    			j = j.ant;
+                		}
+			}	
+            
+        	}	
 
-	      if (i != fim) {
-    			quickSort(i, fim);
-	      }
+        	if (comparaCelulas(esq, j) < 0){
+			quickSort(esq, j);
+		}
+        	if (comparaCelulas(i, dir) < 0) {
+			quickSort(i, dir);
+		}
+    	}
 
-	}	
+	private int comparaCelulas(Celula c1, Celula c2) {
+
+        	if (c1 == c2) return 0;
+        	if (c1 == null || c2 == null) return 1;
+        
+        	Celula temp = c1;
+        	while (temp != null) {
+
+            		if (temp == c2){
+			       	return -1;
+			} // c1 vem antes de c2
+           
+            		temp = temp.prox;
+        	}
+
+        	return 1; // c1 vem depois de c2
+    	}	
 }
 
 public class Tp3Q5 {
@@ -527,29 +555,22 @@ public class Tp3Q5 {
 		carros = LeitorCsv.ler("/tmp/veiculos.csv");
 		ListaDupla lista = new ListaDupla();	
 		Scanner scan = new Scanner (System.in);
-		int contador = 0;
 
 		int vetor[] = new int[500];
-		int num = Integer.parseInt (scan.nextLine());
+		int num = scan.nextInt();
 		int i = 0;
 
-		while ( num != -1 ){
-
-			vetor [i] = num;
-			i++;
-			num = Integer.parseInt (scan.nextLine());
-			contador++;
-		}
+		while ( num != -1){
 	
-		for (int j = 0; j < contador ; j++){
-		
-			for (int k = 0; k < 500; k++){
+			for (int j = 0; j < carros.length ; j++){
 			
-				if (carros[k].getId() == vetor[j]){
+				if (carros[j].getId() == num){
 					
-					lista.inserirFim(carros[k]);	
+					lista.inserirFim(carros[j]);	
 				}
 			}
+		
+		num = scan.nextInt();	
 		}
 
 		lista.chamadaQuick();
