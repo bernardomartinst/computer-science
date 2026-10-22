@@ -20,7 +20,7 @@ class No{
          }
 } 
 
-class arvoreBinaria (){
+class arvoreBinaria{
 
 	public No raiz;
 
@@ -28,12 +28,12 @@ class arvoreBinaria (){
                  raiz = null;
         }
 
-	public void inserir (int x){
+	public void inserir (int x) throws Exception {
  
-                 raiz = inserir(x, raiz);
+                 raiz = inserir(raiz, x);
         }
  
-        private void inserir(int x, No i) throws Exception{
+        private No inserir (No i, int x) throws Exception{
  
                 if (i == null){
  
@@ -41,31 +41,53 @@ class arvoreBinaria (){
  
                 } else if (x < i.elemento){
  
-                        i = inserir (i.esq, x);
+                        i.esq = inserir (i.esq, x);
 
                 } else if (x > i.elemento){
  
-                        i = inserir (i.dir, x);
+                        i.dir = inserir (i.dir, x);
  
                 } else {
  
-                        throw new Exception("ja esta na arvore")
+                        throw new Exception("ja esta na arvore");
                 }
  
                 return i;
         }
 
-	public void emOrdem (No i){
+	public void emOrdem (){
+		
+		if(raiz == null){
 
-                 if (i != null){
+			System.out.println ("V");
+		} else {
+		
+			emOrdem(raiz);
+		}
+	}
 
-                     	preOrdem(i.esq);
+	private void emOrdem (No i){
+		
+		 if (i != null){
+
+                     	emOrdem(i.esq);
                         System.out.print (i.elemento + " ");
-                        preOrdem (i.dir);
+                        emOrdem (i.dir);
+                }
+        }
+	
+	public void preOrdem (){
+ 
+                if(raiz == null){
+
+                        System.out.println ("V");
+                } else {
+
+                        preOrdem(raiz);
                 }
         }
 
-        public void preOrdem (No i){
+        private void preOrdem (No i){
 
                 if (i != null){
 
@@ -76,53 +98,118 @@ class arvoreBinaria (){
 
          }
 
-         public void posOrdem (No i){
+	public void posOrdem (){
+
+                 if(raiz == null){
+
+                         System.out.println ("V");
+                 } else {
+
+                         posOrdem(raiz);
+                 }
+         }
+
+         private void posOrdem (No i){
 
                 if (i != null){
 
-                        preOrdem (i.esq);
-                        preOrdem (i.dir);
+                        posOrdem (i.esq);
+                        posOrdem (i.dir);
                         System.out.print (i.elemento + " ");
 		}
         }
 
-	public boolean pesquisar (int x, No i){
+	public void pesquisar (int x){
 	
-		boolean aux;	
+		boolean res = pesquisar (x, raiz);
+
+		if (res){
 		
+			System.out.println ("S");	
+		} else {
+			System.out.println ("N");
+		}
+	}
+
+	private boolean pesquisar (int x, No i){
+			
+		boolean resp;
+
 		if (i == null){
 
-			aux = false;
-
-		} else if (x == i.elemento){
-			
-			aux = true;
-
-		} else if (x < i.elemento){
-		
-			pesquisar(x, i.esq);
+			resp = false;
 
 		} else {
 		
-			pesquisar (x, i.dir)
+			System.out.print (i.elemento + " ");
+			
+			if (x == i.elemento){
+			
+				resp = true;
+
+			} else if (x < i.elemento){
+		
+				resp = pesquisar(x, i.esq);
+
+			} else {
+			
+				resp = pesquisar (x, i.dir);
+			}
+
 		}
 
-		return aux;
+		return resp;
 	}
 }
 
 class LabArvoreBinaria {
 
 	public static void main (String[] args){
-	
-		Scanner scan = new Scanner (System.in);
-		String entrada;
 
+		arvoreBinaria arvore = new arvoreBinaria();
 		
+		Scanner scan = new Scanner (System.in);
+
+		while (scan.hasNextLine()){
+
+			String entrada = scan.nextLine();
+			String[] comando = entrada.split(" ");
+			
+			try {
+			
+			
+				if (comando[0].compareTo("I") == 0){
+				
+					arvore.inserir(Integer.parseInt(comando[1]));
+				}
+
+				if (comando[0].compareTo("P") == 0){
+					
+					arvore.pesquisar(Integer.parseInt (comando[1]));	
+				}
+
+				if (comando[0].compareTo("PRE") == 0){
+
+					arvore.preOrdem();
+				}
+
+				if (comando[0].compareTo("POS") == 0){
+					
+					arvore.posOrdem ();
+                                }
 		
-		
+				if (comando[0].compareTo("EM") == 0){
+
+					arvore.emOrdem();
+
+                                }
+
 	
-	
+			} catch (Exception e){
+			
+				System.out.println (e.getMessage());
+			}
+		}
 	}
 }
 
