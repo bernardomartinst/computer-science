@@ -151,7 +151,7 @@ class Veiculo {
 		Veiculo carro = new Veiculo();
 
 		carro.setId (Integer.parseInt (dados[0]));
-	        carro.setMarca (dados[1]);
+	    carro.setMarca (dados[1]);
 		carro.setModelo (dados[2]);
 		carro.setAno (Integer.parseInt (dados[3]));
 		carro.setCategoria (dados[4]);
@@ -220,7 +220,7 @@ class Data {
                  return mes;
         }
         
-       	public void setMes(int mes){
+    public void setMes(int mes){
                 this.mes = mes;
 	}
 
@@ -397,10 +397,8 @@ public class Tp4Q5 {
 		carros = LeitorCsv.ler("/tmp/veiculos.csv");	
 		Scanner scan = new Scanner (System.in);
 		ArvoreBinaria a = new ArvoreBinaria();
-
-		int vetor[] = new int[500];
+		
 		int num = scan.nextInt();
-		int i = 0;
 		
 		while ( num != -1 ){
 	
