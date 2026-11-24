@@ -173,11 +173,11 @@ Veiculo* lerCsv(char* caminhoArquivo, int* n) {
     return conjunto;
 }
 
-typedef No {
+typedef struct No {
 	Veiculo elemento;
-	No *esq;
-	No *dir;
-};
+	struct No *esq;
+	struct No *dir;
+}No;
 
 No* novoNo(Veiculo elemento){
 
@@ -188,17 +188,40 @@ No* novoNo(Veiculo elemento){
 	return novo;	
 }
 
-No* inserir(Veiculo carro, No** i){
+void inserir(Veiculo carro, No** i){
 	
 	if (*i == NULL){
 		*i = novoNo(carro);
 
-	}else if (x < (*i)->elemento){
+	}else if (strcmp(carro.modelo, (*i)->elemento.modelo) < 0){
 		inserir(carro, &((*i)->esq));
 
 	}else {
-		inserir(carro, &((*i)->esq));
+		inserir(carro, &((*i)->dir));
 	}
+}
+
+bool pesquisarRec (char modelo[], No* i){
+		
+	bool resp;
+
+	if (i == NULL){
+		resp = false;
+
+	}else if (strcmp(modelo, i->elemento.modelo) == 0){
+		resp = true;
+
+	}else if (strcmp(modelo, i->elemento.modelo) < 0){
+
+		printf("esq ");
+		resp = pesquisarRec(modelo, i->esq);
+
+	}else{
+		printf("dir ");
+		resp = pesquisarRec(modelo, i->dir);
+	}
+
+	return resp;
 }
 
 void pesquisar(char modelo[], No* raiz){
@@ -210,33 +233,10 @@ void pesquisar(char modelo[], No* raiz){
 	bool res = pesquisarRec(modelo, raiz);
 
 	if(res){
-		printf("SIM");
+		printf("SIM\n");
 	} else {
-		printf("NAO");
+		printf("NAO\n");
 	}
-}
-
-bool pesquisarRec (char modelo[], No* i){
-		
-	bool resp;
-
-	if (i == NULL){
-		resp = false;
-
-	}else if (strcmp(modelo, i->elemento->modelo) == 0){
-		resp = true;
-
-	}else if (strcmp(modelo, i->elemento->modelo) < 0){
-
-		printf("esq");
-		resp = pesquisarRec(modelo, i->esq);
-
-	}else{
-		printf("dir");
-		resp = pesquisarRec(modelo, i->dir);
-	}
-
-	return resp;
 }
 
 void emOrdem(No *i){
@@ -246,41 +246,50 @@ void emOrdem(No *i){
 		char res[2048];
 		emOrdem(i->esq);
 		formatVeiculo(&i->elemento, res);
-	        printf ("%s\n", res);
+	    printf ("%s\n", res);
 		emOrdem(i->dir);
 	}
+}
+
+void retirarChar(char string[]){
+
+    int tam = strlen(string);
+    if (string[tam - 1] == '\n'){
+        string[tam - 1] = '\0';
+    }
 }
  
 int main() {
     
     int totalVeiculos = 0;
-    Veiculo* veiculos = lerCsv("/tmp/veiculos.csv", &totalVeiculos); 
-    Veiculo consumoEstrada [100];
-    int qtdConsumo = 0; 	
+    Veiculo* veiculos = lerCsv("/tmp/veiculos.csv", &totalVeiculos); 	
     No* raiz = NULL;
 
     int entrada;
-    scanf("%d", entrada);
+    scanf("%d", &entrada);
    
     while (entrada != -1){
 	
         for (int i = 0; i < totalVeiculos; i++) {
             if (veiculos[i].id == entrada) {
-		inserir(veiculos[i], raiz);
+		        inserir(veiculos[i], &raiz);
             }
         }
 
-	scanf("%d", entrada);
+	    scanf("%d", &entrada);
     }
 	
     char modelo[100];
+    getchar();
     fgets(modelo, 100, stdin);
+    retirarChar(modelo);
 
     while (strcmp(modelo, "FIM") != 0){
-    	
-	pesquisar()
-    }
+        pesquisar(modelo, raiz);
+        fgets(modelo, 100, stdin);
+        retirarChar(modelo);
+    }    	
 
-    emOrdem();
+    emOrdem(raiz);
     free(veiculos);
 }
