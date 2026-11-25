@@ -196,7 +196,7 @@ void inserir(Veiculo carro, No** i){
 	}else if (strcmp(carro.modelo, (*i)->elemento.modelo) < 0){
 		inserir(carro, &((*i)->esq));
 
-	}else {
+	}else if (strcmp(carro.modelo, (*i)->elemento.modelo) > 0){
 		inserir(carro, &((*i)->dir));
 	}
 }
@@ -246,7 +246,7 @@ void emOrdem(No *i){
 		char res[2048];
 		emOrdem(i->esq);
 		formatVeiculo(&i->elemento, res);
-	    printf ("%s\n", res);
+	    	printf ("%s\n", res);
 		emOrdem(i->dir);
 	}
 }
