@@ -177,7 +177,7 @@ typedef struct No {
 	Veiculo elemento;
 	struct No *esq;
 	struct No *dir;
-    bool cor;
+    	bool cor;
 }No;
 
 No* novoNo(Veiculo elemento){
@@ -186,20 +186,34 @@ No* novoNo(Veiculo elemento){
 	novo->elemento = elemento;
 	novo->esq = NULL;
 	novo->dir = NULL;
-    novo->cor = false;
+    	novo->cor = true;
 	return novo;	
 }
 
-void inserir(Veiculo carro, No** i){
-	
+void inserir(Veiculo carro, No** raiz){
+	if (*raiz == NULL){
+		*raiz = novoNo(carro);
+	} else {
+		inserirRec (carro, NULL, NULL, NULL, raiz, raiz);
+	}
+
+	(*raiz) -> cor = false;
+}
+
+void inserirRec(Veiculo carro, No* bisavo, No* avo, No* pai, No** i, No** raiz){
+
 	if (*i == NULL){
-		*i = novoNo(carro);
+		if (strcmp(carro.modelo, (*pai)->elemento.modelo) < 0){
+			*pai->esq = novoNo(carro);
+			*i = pai->esq;
+		}
+		
 
-	}else if (strcmp(carro.modelo, (*i)->elemento.modelo) < 0){
-		inserir(carro, &((*i)->esq));
+	//}else if (strcmp(carro.modelo, (*i)->elemento.modelo) < 0){
+		//inserir(carro, &((*i)->esq));
 
-	}else {
-		inserir(carro, &((*i)->dir));
+	//}else if (strcmp(carro.modelo, (*i)->elemento.modelo) > 0){
+		//inserir(carro, &((*i)->dir));
 	}
 }
 
@@ -244,12 +258,12 @@ void pesquisar(char modelo[], No* raiz){
 void emOrdem(No *i){
 
 	if (i != NULL){
-		
-		char res[2048];
-		emOrdem(i->esq);
-		formatVeiculo(&i->elemento, res);
+
+	    char res[2048];
+	    emOrdem(i->esq);
+	    formatVeiculo(&i->elemento, res);
 	    printf ("%s\n", res);
-		emOrdem(i->dir);
+	    emOrdem(i->dir);
 	}
 }
 
@@ -259,6 +273,18 @@ void retirarChar(char string[]){
     if (string[tam - 1] == '\n'){
         string[tam - 1] = '\0';
     }
+}
+
+bool isNoTipoQuatro (No* i){
+	
+	return (i->esq != NULL && i->dir != NULL && i->esq.cor == true && i->dir.cor == true);
+} 
+
+void fragmentar(No* i){
+	
+	i.cor = true;
+	i->esq.cor = false;
+	i->dir.cor = false;
 }
  
 int main() {
