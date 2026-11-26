@@ -290,11 +290,9 @@ class LeitorCsv{
 class Hash {
 	
 	Veiculo[] tabela;
-	int tamTab;
 	
 	public Hash(int tam){
 		
-		this.tamTab = tam;
 		tabela = new Veiculo[tam];
 
 		for(int i = 0; i < tam; i++){
@@ -310,17 +308,17 @@ class Hash {
 			valor+= modelo.charAt(i);
 		}
 
-		return valor % tamTab;
+		return valor % 31;
 	}
 	
 	public void inserir(Veiculo carro){
 		
 		int pos1 = hash(carro.getModelo());
-		int pos2 = 32;
+		int pos2 = 31;
 		if (tabela[pos1] == null){
 			tabela[pos1] = carro;
 		} else {
-			while (tabela[pos2] != null && pos2 < 50){
+			while (pos2 < 50 && tabela[pos2] != null){
 				pos2++;
 			}
 			if (pos2 < 50){
@@ -329,6 +327,27 @@ class Hash {
 				System.out.println(carro.getModelo());
 			}
 		}	
+	}
+
+	public void pesquisar(String modelo){
+	
+		int pos = hash(modelo);
+		boolean flag = false;
+
+		if (tabela[pos] != null && tabela[pos].getModelo().compareTo(modelo) == 0){
+			System.out.println (pos + " " + tabela[pos].format());
+		} else {
+		
+			for(int i = 31; i < 50; i++){
+				if (tabela[i] != null && tabela[i].getModelo().compareTo(modelo) == 0){
+					System.out.println (i + " " + tabela[i].format());
+					flag = true;
+				}
+			}
+			if (!flag){
+				System.out.println("-1");
+			}	
+		}
 	}
 }
 public class Tp4Q9 {
