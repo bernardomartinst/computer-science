@@ -180,6 +180,15 @@ typedef struct No {
     	bool cor;
 }No;
 
+No* novoNo(Veiculo elemento);
+void inserir(Veiculo carro, No** raiz);
+void inserirRec(Veiculo carro, No* bisavo, No* avo, No* pai, No* i, No** raiz);
+void balancear(No* bisavo, No* avo, No* pai, No* i, No** raiz);
+No* rotacaoDir(No* i);
+No* rotacaoEsq(No* i);
+bool isNoTipoQuatro(No* i);
+void fragmentar(No* i);
+
 No* novoNo(Veiculo elemento){
 
 	No* novo = (No*) malloc(sizeof(No));
@@ -194,28 +203,103 @@ void inserir(Veiculo carro, No** raiz){
 	if (*raiz == NULL){
 		*raiz = novoNo(carro);
 	} else {
-		inserirRec (carro, NULL, NULL, NULL, raiz, raiz);
+		inserirRec(carro, NULL, NULL, NULL, *raiz, raiz);
 	}
 
 	(*raiz) -> cor = false;
 }
 
-void inserirRec(Veiculo carro, No* bisavo, No* avo, No* pai, No** i, No** raiz){
+void inserirRec(Veiculo carro, No* bisavo, No* avo, No* pai, No* i, No** raiz){
 
-	if (*i == NULL){
-		if (strcmp(carro.modelo, (*pai)->elemento.modelo) < 0){
-			*pai->esq = novoNo(carro);
-			*i = pai->esq;
+	if (i == NULL){
+		if (strcmp(carro.modelo, pai->elemento.modelo) < 0){
+			pai->esq = novoNo(carro);
+			i = pai->esq;
+		} else if (strcmp(carro.modelo, pai->elemento.modelo) > 0){
+			pai->dir = novoNo(carro);
+			i = pai->dir;
+		}
+
+		if (pai->cor == true){
+			balancear(bisavo, avo, pai, i, raiz);
+		}
+
+	}else {
+		
+		if (isNoTipoQuatro(i)){
+			fragmentar(i);
+			if (i == *raiz){
+				i->cor = false;
+
+			}else if (pai->cor == true){
+				balancear(bisavo, avo, pai, i, raiz);
+			}
+		}
+
+	 	if (strcmp(carro.modelo, i->elemento.modelo) < 0){
+			inserirRec(carro, avo, pai, i, i->esq, raiz);
+
+		}else if (strcmp(carro.modelo, i->elemento.modelo) > 0){
+			inserirRec(carro, avo, pai, i, i->dir, raiz);
+		}
+	}	
+}
+
+void balancear (No* bisavo, No* avo, No* pai, No* i, No** raiz){
+
+	if (pai->cor == true){
+		No* novo;
+	
+		if (strcmp(pai->elemento.modelo, avo->elemento.modelo) > 0){
+			if (strcmp(i->elemento.modelo, pai->elemento.modelo) < 0){
+				avo->dir = rotacaoDir(pai);
+			}
+			novo = rotacaoEsq(avo);
+		} else {
+			
+			if (strcmp(i->elemento.modelo, pai->elemento.modelo) > 0){
+                                   avo->esq = rotacaoEsq(pai);
+                         }
+                           novo = rotacaoDir(avo);	
 		}
 		
+		if (bisavo == NULL){
+			*raiz = novo;
+		} else if (strcmp(novo->elemento.modelo, bisavo->elemento.modelo) < 0){
+			bisavo->esq = novo;
+		} else {
+			bisavo->dir = novo;
+		}
 
-	//}else if (strcmp(carro.modelo, (*i)->elemento.modelo) < 0){
-		//inserir(carro, &((*i)->esq));
-
-	//}else if (strcmp(carro.modelo, (*i)->elemento.modelo) > 0){
-		//inserir(carro, &((*i)->dir));
+		novo->cor = false;
+		novo->esq->cor = true;
+		novo->dir->cor = true;		
 	}
 }
+
+No* rotacaoDir(No* i){
+
+	No* noEsq = i->esq;
+	No* noEsqDir = noEsq->dir;
+
+	noEsq->dir = i;
+	i->esq = noEsqDir;
+
+	return noEsq;	
+}
+
+No* rotacaoEsq(No* i){
+
+        No* noDir = i->dir;
+        No* noDirEsq = noDir->esq;
+
+        noDir->esq = i;
+        i->dir = noDirEsq;
+ 
+        return noDir;
+}
+
+
 
 bool pesquisarRec (char modelo[], No* i){
 		
@@ -277,14 +361,14 @@ void retirarChar(char string[]){
 
 bool isNoTipoQuatro (No* i){
 	
-	return (i->esq != NULL && i->dir != NULL && i->esq.cor == true && i->dir.cor == true);
+	return (i->esq != NULL && i->dir != NULL && i->esq->cor == true && i->dir->cor == true);
 } 
 
 void fragmentar(No* i){
 	
-	i.cor = true;
-	i->esq.cor = false;
-	i->dir.cor = false;
+	i->cor = true;
+	i->esq->cor = false;
+	i->dir->cor = false;
 }
  
 int main() {
